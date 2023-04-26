@@ -4,16 +4,20 @@
   <h1>Dashboard</h1>
   <ol class="breadcrumb mb-4">
     <li class=" active">Dashboard of&nbsp</li>
-
+    <b>
+      <li class=" active">
+        <%= name %>
+      </b> as&nbsp</li>
+    <li class=" active"><b> <%= role %></b></li>
   </ol>
 
   <div class="row dashColoredCards">
     <div class="col-xl-3 col-md-6">
       <div class="card bg-success text-white mb-4">
         <div class="card-body">Interviewer</div>
-        <!-- <a class="roleDetails" href="/listInterviewer"> -->
+        <a class="roleDetails" href="/listInterviewer">
           <div class="card-footer d-flex align-items-center justify-content-between">
- 
+            <h1 class="small text-white stretched-link"><%= interviewerCount %></h1>
             <div class="small text-white"> <i class="fas fa-angle-right"></i></div>
           </div>
         </a>
@@ -22,9 +26,9 @@
     <div class="col-xl-3 col-md-6">
       <div class="card bg-success text-white mb-4">
         <div class="card-body">HR</div>
-        <!-- <a class="roleDetails" href="/hrList"> -->
+        <a class="roleDetails" href="/hrList">
           <div class="card-footer d-flex align-items-center justify-content-between">
-      
+            <h1 class="small text-white stretched-link"><%= hrCount %></h1>
             <div class="small text-white"><i class="fas fa-angle-right"></i></div>
           </div>
         </a>
@@ -33,9 +37,9 @@
     <div class="col-xl-3 col-md-6">
       <div class="card bg-success text-white mb-4">
         <div class="card-body">Candidates</div>
-   
+        <a class="roleDetails" href="/listCandidate">
           <div class="card-footer d-flex align-items-center justify-content-between">
-          
+            <h1 class="small text-white stretched-link"><%= candidateCount %>
             </h1>
             <div class="small text-white"> <i class="fas fa-angle-right"></i></div>
           </div>

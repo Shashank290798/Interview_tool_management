@@ -1,0 +1,128 @@
+<%- include("../partials/header") %>
+
+<div class="container-fluid px-4">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/home">Dashboard</a></li>
+      <li class="breadcrumb-item"><a href="../interviewer">Interviewer</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Edit Interviewer</li>
+    </ol>
+  </nav>
+  <div class="card page-card">
+    <div class="card-header with-grd">
+      <div class="headingWithBtn">
+        <div>
+          <h4 class="title">Edit Interviewer Details</h4>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <form action="/interviewersUpdate/<%= interviewer._id %>" method="POST">
+        <label>Email </label>
+        <input
+          class="form-control mb-3"
+          type="text"
+          name="user_email"
+          placeholder="Email"
+          required=""
+          value="<%= interviewer.user_email %>"
+          readonly
+        />
+
+        <label>First Name</label>
+        <input
+          class="form-control mb-3"
+          type="text"
+          name="user_first_name"
+          placeholder="First Name"
+          required=""
+          value="<%= interviewer.user_first_name %>"
+        />
+         <label>Last Name</label>
+        <input
+          class="form-control mb-3"
+          type="text"
+          name="user_last_name"
+          placeholder="Last Name"
+          required=""
+          value="<%= interviewer.user_last_name %>"
+        />
+        <div class="mb-3">
+          <label>Technology</label>
+          <select name="user_technology" class="form-control" multiple required>
+            <% for(let i =0; i< technology.length; i++){ %>
+            <option value="<%= technology[i].technology_name %>"
+              <%= interviewer.user_technology.includes(technology[i].technology_name) ? 'selected' : '' %>
+            >
+              <%= technology[i].technology_name %>
+            </option>
+            <% } %>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label><h5>Select The time Slot</h5></label>
+          <div>
+            <label>Start Time</label>
+            <input
+              class="form-control mb-3"
+              type="time"
+              value="<%= interviewer.user_available_timeslots[0] %>"
+              name="start_time"
+              required=""
+            />
+          </div>
+          <div>
+            <label>End Time</label>
+            <input
+              class="form-control mb-3"
+              type="time"
+              value="<%= interviewer.user_available_timeslots[1] %>"
+              name="end_time"
+              required=""
+            />
+          </div>
+        </div>
+        <input type="submit" class="btn btn-primary" value="Save" />
+        <a href="/interviewer" class="btn btn-secondary">Cancel</a>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+document.querySelector('form').addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  const id = "<%= interviewer._id %>";
+  const payload = {
+  user_email: "<%= interviewer.user_email %>",
+  user_first_name: "<%= interviewer.user_first_name %>",
+  user_last_name: "<%= interviewer.user_last_name %>",
+  user_technology: Array.from(document.querySelector('select[name="user_technology"]').selectedOptions).map(option => option.value),
+  user_available_timeslots: [
+    document.querySelector('input[name="start_time"]').value,
+    document.querySelector('input[name="end_time"]').value
+  ]
+};
+
+  try {
+    const response = await fetch(`/interviewerUpdate/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (response.ok) {
+      window.location.href = '/interviewer';
+    } else {
+      throw new Error('Failed to update interviewer data');
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Failed to update interviewer data');
+  }
+});
+
+</script>

@@ -1,0 +1,314 @@
+<%- include("../partials/header") %>
+
+<div class="container-fluid px-4">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/home">Dashboard</a></li>
+      <li class="breadcrumb-item active" aria-current="page">
+        Schedule Management
+      </li>
+    </ol>
+  </nav>
+  <div class="card page-card">
+    <div class="card-header with-grd">
+      <div class="headingWithBtn">
+        <div class="col-md-6"><h4 class="title">Scheduled Interviews</h4></div>
+        <div class="col-md-6 align-me-right">
+          <form
+            id="scheduleFilterForm"
+            class="form-inline float-end"
+            action="/getShedules"
+            method="GET"
+          >
+            <div class="form-group">
+              <label for="fromDate" class="me-2">From Date:</label>
+              <input
+                type="date"
+                id="fromDate"
+                name="fromDate"
+                class="form-control"
+              />
+            </div>
+            <div class="form-group mx-3">
+              <label for="toDate" class="me-2">To Date:</label>
+              <input
+                type="date"
+                id="toDate"
+                name="toDate"
+                class="form-control"
+              />
+            </div>
+            <button id="filterBtn" type="submit" class="btn btn-primary">
+              Filter
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <% if (schedules.length === 0) { %>
+      <p>No schedules found.</p>
+      <% } else { %>
+      <!-- display filtered schedules -->
+      <div class="table-responsive">
+        <table id="datatablesSimple" class="table">
+          <thead>
+            <tr>
+              <th><div>S.no</div></th>
+              <th><div>Candidate Name</div></th>
+              <th><div>Date & Time</div></th>
+              <th><div>Technology</div></th>
+              <th><div>Exp</div></th>
+              <th><div>Interviewer</div></th>
+              <th><div>Status</div></th>
+              <th><div>Notes</div></th>
+              <th>
+                <div style="text-align: center">Action</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody id="table-body">
+            <% for (let i = 0; i < schedules.length; i++) { %>
+            <tr>
+              <td><%= i+1 %></td>
+              <td>
+                <%= schedules[i].candidate_details[0].candidate_first_name %>
+                <%= schedules[i].candidate_details[0].candidate_last_name %>
+              </td>
+              <td>
+                <%= new
+                Date(schedules[i].interview_start_date_time).toLocaleString() %>
+              </td>
+              <td><%= schedules[i].interview_technology %></td>
+              <td>
+                <%= schedules[i].candidate_details[0].candidate_experience %>
+              </td>
+              <td>
+                <div>
+                  <% for(var j=0;j< schedules[i].interviewer_details.length;
+                  j++){ %> <%=
+                  `${schedules[i].interviewer_details[j].user_first_name}
+                  ${schedules[i].interviewer_details[j].user_last_name}, ` %>
+                  <%} %>
+                </div>
+              </td>
+              <td><%= schedules[i].interview_status %></td>
+              <td>
+                <div>
+                  <% if(schedules[i].interview_notes.length < 10){ %> <%=
+                  schedules[i].interview_notes %> <% }else{ %> <% var string =
+                  schedules[i].interview_notes%> <% var trimmedString =
+                  string.substring(0, 10) %>
+                  <p>
+                    <%= trimmedString %>...&nbsp;&nbsp;
+                    <a
+                      onclick="openPopup('<%= schedules[i].interview_notes %>')"
+                      id="read-more-kra"
+                      class="link-primary readKra"
+                      data-bs-toggle="modal"
+                      data-bs-target="#readDialog"
+                      data-id=""
+                    >
+                      Read more
+                    </a>
+                  </p>
+                  <% } %>
+                </div>
+              </td>
+              <td>
+                <div>
+                  <a
+                    class="btn me-2"
+                    title="Download Resume"
+                    href="/resumeDownload?file_name=<%= schedules[i].candidate_details[0].candidate_resume%>"
+                    ><span class="icon-file"><i class="fa-solid fa-file-arrow-down"></i></span></a
+                    ></a
+                  >
+                  <% if (schedules[i].interview_status === "SCHEDULED") { %>
+                  <a
+                  class="btn me-2"
+                  title="Join Interview"
+                    href="https:<%= schedules[i].interview_meetLink %>"
+                    target="_blank"
+                    ><span class="icon-join"><i class="fa-solid fa-video"></i></span></a
+                  >
+                  <% } %> <% if (schedules[i].interview_status === "SCHEDULED" &&
+                  schedules[i].interviewer_details.length > 1) { %>
+                  <a
+                    class="btn btn-danger deleteKRA hide-btn decline-btn"
+                    data-name="Are you sure you want to decline the interview ? The following interviewers  including <%= schedules[i].interviewer_details.map(interviewer => interviewer.user_first_name + ' ' + interviewer.user_last_name).join(', ') %>, are also assigned Please confirm."
+                    interviewId="<%= schedules[i]._id %>"
+                    onclick="confirmDeclineInterview(event)"
+                  >
+                    DECLINE
+                  </a>
+                  <% } else if(schedules[i].interview_status === "SCHEDULED") {
+                  %>
+                  <a
+                    class="btn btn-danger deleteKRA hide-btn decline-btn"
+                    data-name="Are you sure you want to decline the interview"
+                    interviewId="<%= schedules[i]._id %>"
+                    onclick="confirmDeclineInterview(event)"
+                  >
+                    DECLINE
+                  </a>
+                  <% } %> <% if (schedules[i].interview_status === "SCHEDULED") {
+                  %>
+                  <a
+                    class="btn btn-success me-2 int-action"
+                    href="/fillDetailsForm"
+                    >Fill Form</a
+                  >
+                  <% } %>
+                </div>
+              </td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+      <% } %>
+    </div>
+  </div>
+</div>
+<div
+  class="modal fade"
+  id="confirmDeclineModal"
+  tabindex="-1"
+  aria-labelledby="confirmDeclineModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmDeclineModalLabel">
+          Confirm Decline
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-body-other" id="otherInterviewers">
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            Cancel
+          </button>
+          <button type="button" class="btn btn-danger" id="confirmDeclineBtn">
+            Decline
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="readDialog" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Notes</h5>
+        <button
+        class="btn-close"
+        data-bs-dismiss="modal"
+        aria-label="Close"
+        type="button"
+        onclick="reloadPage()"
+      ></button>
+      </div>
+      <div class="modal-body notes-container">
+        <!-- Notes will be inserted here -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- kra description popup ends here -->
+
+<script>
+  function openPopup(notes) {
+  // Get the modal element
+  const modal = document.getElementById("readDialog");
+  
+  // Get the element where the notes will be displayed
+  const notesContainer = modal.querySelector(".notes-container");
+  
+  // Set the notes in the container
+  notesContainer.textContent = notes;
+  
+  // Show the modal
+  const bsModal = new bootstrap.Modal(modal);
+  bsModal.show();
+  
+}
+window.onbeforeunload = function() {
+  location.reload();
+}
+</script>
+
+<script>
+  function reloadPage() {
+    location.reload();
+  }
+</script>
+<script>
+  function confirmDeclineInterview(event) {
+    var button = event.target;
+    const interviewId = $(event.target).attr("interviewId");
+    var interviewerNames = button.getAttribute("data-name");
+    var message = " " + interviewerNames + "?";
+    $("#confirmDeclineModal .modal-body").text(message);
+    $("#confirmDeclineBtn").attr("interviewId", interviewId);
+    $("#confirmDeclineModal").modal("show");
+    $("#confirmDeclineBtn").on("click", function () {
+      const interviewId = $(this).attr("interviewId");
+      $.ajax({
+        type: "POST",
+        url: "/declineInterview/" + interviewId,
+        success: function () {
+          // Hide the "Decline Interview" button
+          $(".decline-btn[interviewId='" + interviewId + "']").hide();
+          $("#confirmDeclineModal").modal("hide");
+          location.reload();
+        },
+        error: function () {
+          console.log("Error declining interview.");
+        },
+      });
+    });
+  }
+</script>
+<script>
+  $(document).ready(function () {
+    // Event listener for filter button
+    $("#filterBtn").on("click", function () {
+      // Get filter values from form
+      var fromDate = new Date($("#fromDate").val()).toISOString();
+      var toDate = new Date($("#toDate").val()).toISOString();
+      console.log(fromDate, toDate);
+      // Make AJAX request to backend with filter values
+      $.ajax({
+        type: "GET",
+        url: "/getShedules",
+        data: {
+          fromDate: fromDate,
+          toDate: toDate,
+        },
+        success: function (data) {
+          // Update table with filtered schedules
+          console.log(data)
+          $("#table-body").html(data);
+        },
+        error: function (xhr, status, error) {
+          console.log(error);
+        },
+      });
+    });
+  });
+</script>

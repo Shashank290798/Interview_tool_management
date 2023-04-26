@@ -6,16 +6,29 @@ const logger = require("../utils/logger");
 const authUser = (req, res, next) => {
   try {
     let token = req.cookies.jwt;
-    let verify = jwt.verify(
-      token,
-      process.env.SECRET_KEY || configs.SECRET_KEY
-    );
-    if (verify) {
-      next();
+    //console.log(token)
+    if (token) {
+      let verify = jwt.verify(
+        token,
+        process.env.SECRET_KEY || configs.SECRET_KEY
+      );
+     // console.log(verify)
+      if (verify) {
+        req.userName = verify.name;
+        req.role = verify.role;
+        req.user_id = verify.user_id
+        next();
+      } else {
+       res.redirect("/");
+      }
     } else {
+      res.redirect("/");
     }
   } catch (error) {
     logger.error(error);
+    res.clearCookie("connect.sid");
+    res.clearCookie('jwt')
+    res.redirect('/')
   }
 };
 

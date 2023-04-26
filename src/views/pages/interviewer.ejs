@@ -1,0 +1,151 @@
+<%- include("../partials/header") %>
+
+<div class="container-fluid px-4">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/home">Dashboard</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Interviewer Management</li>
+    </ol>
+  </nav>
+  <div class="card page-card">
+    <div class="card-header with-grd">
+      <div class="headingWithBtn">
+        <div class="col-xl-4"><h4 class="title">Interviewer Management</h4></div>
+        <div class="col-xl-4 align-me-right">
+          <a href="/addInterviewer" class="btn btn-primary"> Add Interviewer </a>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <table id="datatablesSimple" class="table">
+        <thead>
+          <tr>
+            <th>
+              <div>S.no.</div>
+            </th>
+            <th>
+              <div>First Name</div>
+            </th>
+            <th>
+              <div>Last Name</div>
+            </th>
+            <th>
+              <div>Email</div>
+            </th>
+            <th>
+              <div>Technology</div>
+            </th>
+            <th>
+              <div>Time Slot</div>
+            </th>
+            <th>
+              <div>Actions</div>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <% for(let i=0; i<interviewerList.length; i++) { %>
+          <tr>
+            <td><%= i+1 %></td>
+            <td><%= interviewerList[i].user_first_name %></td>
+            <td><%= interviewerList[i].user_last_name%></td>
+            <td><%= interviewerList[i].user_email%></td>
+            <td><%= interviewerList[i].user_technology%></td>
+            <td><%= interviewerList[i].user_available_timeslots.toLocaleString()%></td>
+            <td>
+              <div class="d-flex justify-content-end">
+                <a href="/edit/<%= interviewerList[i]._id %>" class="btn btn-secondary me-3" id="editInterviewerBtn" data-id="<%= interviewerList[i]._id %>">Edit</a>
+                <button class="btn btn-danger deleteKRA"
+                data-bs-toggle="modal"
+                data-bs-target="#deleteDialog"
+                data-id="<%= interviewerList[i]._id %>">
+                Delete
+              </button>
+              </div>
+            </td>
+          </tr>
+          <% } %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<!-- Delete kra popup start here -->
+<div
+  class="modal fade"
+  id="deleteDialog"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title fs-5">Delete KRA</h2>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete this interviewer?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+        <button type="button" class="btn btn-primary" onclick="remove()">
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</div> 
+
+<!-- Delete kra popup ends here -->
+
+
+<script>
+function remove() {
+  var url = `/interviewers/${deleteDialogID}`;
+  $.ajax({
+    type: "DELETE",
+    dataType: "json",
+    url: url,
+    complete: function (data) {
+      location.reload();
+    },
+  });
+}
+$(document).on("click", ".deleteKRA", function () {
+  deleteDialogID = $(this).data("id");
+});
+// get the id of the interviewer to edit from the data-id attribute of the Edit button
+const id = $(this).data("id");
+// populate the form fields with the current values of the interviewer's details
+const interviewer = interviewerList.find((interviewer) => interviewer._id === id);
+$("#editInterviewerForm input[name=user_first_name]").val(interviewer.user_first_name);
+$("#editInterviewerForm input[name=user_last_name]").val(interviewer.user_last_name);
+$("#editInterviewerForm input[name=user_email]").val(interviewer.user_email);
+$("#editInterviewerForm input[name=user_technology]").val(interviewer.user_technology);
+// show the Edit Interviewer popup window
+$("#editInterviewerPopup").modal("show");
+// handle the form submission
+$("#editInterviewerForm").submit((event) => {
+  event.preventDefault();
+  const formdata = $("#editInterviewerForm").serialize();
+  $.ajax({
+    type: "PUT",
+    dataType: "json",
+    url: `/interviewersUpdate/${id}`,
+    data: formdata,
+    success: function () {
+      location.reload();
+    },
+  });
+});
+</script>

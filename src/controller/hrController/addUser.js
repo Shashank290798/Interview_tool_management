@@ -5,30 +5,30 @@ const moment = require("moment");
 
 let addUser = async (req, res) => {
   //   let result = await userModel.create(req.body);
-  
-    let cal = ical({
-      domain: "mytestwebsite.com",
-      name: "My test calendar event",
-    });
-    // cal.domain("mytestwebsite.com");
-    cal.createEvent({
-      start: moment(), // eg : moment()
-      end: moment(1, "days"), // eg : moment(1,'days')
-      summary: "meet.google.com/pmx-tssk-cpc", // 'Summary of your event'
-      description: "More description  meet.google.com/pmx-tssk-cpc des", // 'More description'
-      location: "Delhi", // 'Delhi'
-      url: "meet.google.com/pmx-tssk-cpc", // 'event url'
-        organizer: {
-          // 'organizer details'
-          name: "harshit",
-          email: "harshit.j@webvillee.in",
-        },
-    });
 
-    mailOptions = {
-      to: `${req.body.user_email}`,
-      subject: `calendar invitation`,
-      html: `
+  let cal = ical({
+    domain: "mytestwebsite.com",
+    name: "My test calendar event",
+  });
+  // cal.domain("mytestwebsite.com");
+  cal.createEvent({
+    start: moment(), // eg : moment()
+    end: moment(1, "days"), // eg : moment(1,'days')
+    summary: "meet.google.com/pmx-tssk-cpc", // 'Summary of your event'
+    description: "More description  meet.google.com/pmx-tssk-cpc des", // 'More description'
+    location: "Delhi", // 'Delhi'
+    url: "meet.google.com/pmx-tssk-cpc", // 'event url'
+    organizer: {
+      // 'organizer details'
+      name: "harshit",
+      email: "harshit.j@webvillee.in",
+    },
+  });
+
+  mailOptions = {
+    to: `${req.body.user_email}`,
+    subject: `calendar invitation`,
+    html: `
       //       <p>
       //       </p> Calendar invite</br>
 
@@ -38,33 +38,33 @@ let addUser = async (req, res) => {
       //       </p>
 
       //       `,
+  };
+  if (cal) {
+    let alternatives = {
+      "Content-Type": "text/calendar",
+      method: "ADD",
+      content: new Buffer.from(cal.toString()),
+      component: "VEVENT",
+      "Content-Class": "urn:content-classes:calendarmessage",
     };
-    if (cal) {
-      let alternatives = {
-        "Content-Type": "text/calendar",
-        method: "ADD",
-        content: new Buffer.from(cal.toString()),
-        component: "VEVENT",
-        "Content-Class": "urn:content-classes:calendarmessage",
-      };
-      mailOptions["alternatives"] = alternatives;
-      mailOptions["alternatives"]["contentType"] = "text/calendar";
-      mailOptions["alternatives"]["content"] = new Buffer.from(cal.toString());
+    mailOptions["alternatives"] = alternatives;
+    mailOptions["alternatives"]["contentType"] = "text/calendar";
+    mailOptions["alternatives"]["content"] = new Buffer.from(cal.toString());
+  }
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.log("error  :", error);
+    } else {
+      console.log("Email sent: " + info.response);
     }
+  });
 
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.log("error  :", error);
-      } else {
-        console.log("Email sent: " + info.response);
-      }
-    });
-
-    let mailOptionFrom = {
-      from: "krawebvillee@gmail.com",
-      to: `${req.body.user_email}`,
-      subject: `calendar invitation`,
-      html: `
+  let mailOptionFrom = {
+    from: "krawebvillee@gmail.com",
+    to: `${req.body.user_email}`,
+    subject: `calendar invitation`,
+    html: `
         <p>
 
         </p> </br>
@@ -75,15 +75,15 @@ let addUser = async (req, res) => {
         </p>
 
         `,
-    };
+  };
 
-    transporter.sendMail(mailOptionFrom, (error, info) => {
-      if (error) {
-        console.log("error  :", error);
-      } else {
-        console.log("Email sent: " + info.response);
-      }
-    });
+  transporter.sendMail(mailOptionFrom, (error, info) => {
+    if (error) {
+      console.log("error  :", error);
+    } else {
+      console.log("Email sent: " + info.response);
+    }
+  });
 
   res.send("mail sent");
 };

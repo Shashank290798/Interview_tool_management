@@ -1,0 +1,130 @@
+<%- include("../partials/header") %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class="container-fluid px-4">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="/home">Dashboard</a></li>
+              <li class="breadcrumb-item"><a href="/getCandiates">Candidate Management</a></li>
+              <li class="breadcrumb-item active" aria-current="page">
+                Judgement From Submission 
+              </li>
+            </ol>
+            <ol class="breadcrumb">
+               <!-- <li class="breadcrumb-item" >Candidate Name - <%= candidate[0].candidate_first_name %> <%= candidate[0].candidate_last_name %></li>
+               <li class="breadcrumb-item" > Technology - <%= candidate[0].candidate_technology[0] %></li> -->
+               <div class="container">
+                <div class="row">
+                  <div class="col-sm">
+                   Candidate Name - <%= candidate[0].candidate_first_name %> <%= candidate[0].candidate_last_name %>
+                  </div>
+                  <div class="col-sm">
+                    Technology - <%= candidate[0].candidate_technology[0] %>
+                  </div>
+                  <div class="col-sm" > Pass criteria <%= form_data[0].pass_criteria %> </div>
+                  <div class="col-sm" id="avg_result" style="font-weight: bold;"> </div>
+                </div>
+              </div>
+            </ol>
+        </nav>
+        <div class="card page-card">
+            <div class="card-header with-grd">
+                <div class="headingWithBtn">
+                    <div class="col-xl-4"><h4 class="title">Judgement Form</h4></div>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <form action="/formSubmission/<%=  form_data[0]._id %>" method="post">
+                    
+                    <% for(let i=0; i< form_data[0].category_details.length; i++){ %>
+                        <div class="mb-3">
+                            <label><%= form_data[0].category_details[i].category_name %></label>
+                            <select class="form-control ni",
+                            type="text",
+                            name="<%= form_data[0].category_details[i].category_name %>"
+                            placeholder="Points Obtained"
+                            oninput="calc()"
+                            required>
+                                <option  disabled selected value  >Points Obtained</option>
+                                <% for(let j=0; j <= 10; j += 0.5){%>
+                                    <option value="<%= j %>"><%= j %></option>
+                                <% }%>
+                            </select>
+                        </div>
+                    <% } %>
+                    <div class="mb-3">
+                        <label>Select Judgement Form</label>
+                        <select
+                          name="result_status"
+                          class="form-control"
+                          required>
+                            <option disabled selected value >select an option</option>
+                            <option value="pending">Pending</option>
+                            <option value="rejected">Rejected</option>
+                            <option value="selected">Selected</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <button type="submit"
+                        class="btn btn-primary"
+                        value="Submit" id="submit" >Submit</button>
+                        <a href="/getShedules" class="btn btn-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <% var criteria = form_data[0].pass_criteria  %>
+</body>
+<script>
+
+    window.onbeforeunload = function (event) {
+    
+
+       let confirmed = window.confirm('Are You sure You Want to Change the Tab');
+
+       if(confirmed){
+        window.onbeforeunload = null;
+        return null;
+       } else {
+        return '';
+       }
+    }
+
+    let submitButton = document.getElementById('submit');
+    submitButton.addEventListener('click', function () {
+        window.onbeforeunload = null;
+    });
+
+
+    let formFeilds = document.getElementsByClassName("ni");
+    function calc(){
+        let inz = [];
+        for(let i=0; i<formFeilds.length;i++){
+            if( isNaN(Number(formFeilds[i].value))){
+                inz.push(0)
+            } else{
+                inz.push(Number(formFeilds[i].value))
+            }
+        }
+    let total  = inz.length*10 
+    let average = inz.length > 0 ? (inz.reduce((a,b) => a+b)/total)*100 : 0;
+    document.getElementById("avg_result").innerHTML = "Live Score"+ " "+average.toFixed(2);
+    if(average <= <%= criteria %>){
+        document.getElementById("avg_result").style.color = '#'+'FF0000';
+    } else{
+        document.getElementById("avg_result").style.color = '#'+'008000';
+    }
+}
+
+
+</script>
+</html>

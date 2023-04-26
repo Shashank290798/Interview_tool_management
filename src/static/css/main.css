@@ -172,9 +172,9 @@ iframe {
   display: -ms-flexbox;
   display: flex;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: left;
   align-items: center;
-  padding: 15px;
+  padding: 15px 15px 15px 98px;
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
@@ -198,7 +198,7 @@ iframe {
 .login100-form-title {
   display: block;
   font-family: Poppins-Bold;
-  font-size: 39px;
+  font-size: 30px;
   color: #333333;
   line-height: 1.2;
   text-align: center;
@@ -473,3 +473,15 @@ iframe {
     padding-right: 15px;
   }
 } 
+
+.appAuthContent{
+  color: #fff;
+  /* font-size: 66px; */
+  font-weight: 600;
+  line-height: 79px;
+  margin: 0;
+  padding: 75px;
+}
+#normal-text{
+  font-size: 16px;
+}

@@ -1,0 +1,126 @@
+<%- include("../partials/header") %>
+<div class="container-fluid px-4">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/home">Dashboard</a></li>
+      <li class="breadcrumb-item"><a href="../interviewer">interviewer</a></li>
+      <li class="breadcrumb-item active" aria-current="page">
+        Submit Interviewer
+      </li>
+    </ol>
+  </nav>
+  <div class="card page-card">
+    <div class="card-header with-grd">
+      <div class="headingWithBtn">
+        <div>
+          <h4 class="title">Submit Interviewer details</h4>
+        </div>
+      </div>
+      <div class="card-body">
+        <form id="addInterviewerForm">
+          <div class="mb-3">
+            <label>Email </label>
+            <input class="form-control" placeholder="Email" type="email" value="" name="user_email" required="" id="email-input"/>
+            <div id="email-error" class="invalid-feedback" style="display: none">
+              Email address is already taken. Enter a new email address. 
+            </div>
+          </div>
+          <div class="mb-3">
+            <label>First Name</label>
+            <input class="form-control"  placeholder="First Name"type="text" value=""name="user_first_name"required=""/>
+          </div>
+          <div class="mb-3">
+            <label>Last Name</label>
+            <input class="form-control" placeholder="Last Name" type="text" value="" name="user_last_name" required=""/>
+          </div>
+
+          <div class="mb-3">
+            <label>Technology</label>
+            <select name="user_technology" class="form-control" multiple required>
+              <% for(let i =0; i< technology.length; i++){ %>
+              <option value="<%= technology[i].technology_name %>">
+                <%= technology[i].technology_name %>
+              </option>
+              <% } %>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label><h5>Select The time Slot</h5></label>
+            <div>
+              <label>Start Time</label>
+              <input class="form-control" placeholder="Last Name" type="time" value="" name="start_time" />
+            </div>
+            <div>
+              <label>End Time</label>
+              <input class="form-control" placeholder="Last Name" type="time" value="" name="end_time" />
+            </div>
+          </div>
+          <input type="submit" class="btn btn-primary" value="Submit" id="submit" name="submit-btn"/>
+          <a href="/interviewer" class="btn btn-secondary"> Cancel</a>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  const addInterviewerForm = document.getElementById("addInterviewerForm");
+  // const technology = $("#technology").val()
+  const emailInput = document.getElementById("email-input");
+  console.log(emailInput.value)
+  const emailError = document.getElementById("email-error");
+  const submitBtn = document.getElementById("submit");
+
+  addInterviewerForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const email = emailInput.value.trim();
+
+    if (email) {
+      try {
+        const response = await fetch(`/checkEmail?email=${email}`);
+        const data = await response.json();
+
+        if (data.isEmailExists) {
+          emailInput.classList.add("is-invalid");
+          emailError.style.display = "block";
+          submitBtn.disabled = false; // re-enable submit button
+        } else {
+          emailInput.classList.remove("is-invalid");
+          emailError.style.display = "none";
+
+          // Disable the submit button to prevent multiple submissions
+          submitBtn.disabled = true;
+          submitBtn.value = "Submitting...";
+
+          // Submit the form data to the server
+          const formData = new FormData(addInterviewerForm).entries();
+          // console.log(formData)
+          const response = await fetch("/addInterviewer", {
+            headers: {'Content-Type': 'application/json' },
+            method:"POST",
+            body:JSON.stringify(Object.fromEntries(formData)),
+          });
+
+          if (response.ok) {
+            window.location.href = "/interviewer";
+          } else {
+            const errorAlert = document.createElement("div");
+            errorAlert.classList.add("alert", "alert-danger");
+            errorAlert.innerHTML = "Error submitting form. Please try again.";
+            addInterviewerForm.prepend(errorAlert);
+          }
+        }
+      } catch (error) {
+        console.error(error);
+        const errorAlert = document.createElement("div");
+        errorAlert.classList.add("alert", "alert-danger");
+        errorAlert.innerHTML = "Error submitting form. Please try again.";
+        addInterviewerForm.prepend(errorAlert);
+      } finally {
+        // Enable the submit button after the form is submitted
+        submitBtn.disabled = false;
+        submitBtn.value = "Submit";
+      }
+    }
+  });
+</script>
