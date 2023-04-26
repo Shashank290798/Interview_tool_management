@@ -13,11 +13,13 @@ const now = new Date();
 const logger = winston.createLogger({
   transports: [
     new winston.transports.File({
-      name: "error-file",
+      name: "exceptions",
       filename: "./logs/exceptions.log",
       level: "error",
       json: false,
     }),
+    new winston.transports.File({ filename: './logs/combined.log', level: "info"}),
+    new winston.transports.File({ filename: './logs/warning.log', level: "warn"}),
 
     new (require("winston-daily-rotate-file"))({
       filename: `${logDir}/-apimodules.log`,

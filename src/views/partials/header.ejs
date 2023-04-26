@@ -30,15 +30,11 @@
 
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                    <!-- <li><a class="dropdown-item" href="#!">Profile</a></li> -->
-                    <!-- <li>
-                        <hr class="dropdown-divider" />
-                    </li> -->
-                    <li><a class="dropdown-item" href="/">Change Password</a></li>                    
+                    <li><a class="dropdown-item" href="#">My profile</a></li>                    
                     <li>
                         <hr class="dropdown-divider" />
                     </li>
-                    <li><a class="dropdown-item" href="/">Logout</a></li>
+                    <li><a class="dropdown-item" href="/logout">Logout</a></li>
                 </ul>
             </li>
         </ul>
@@ -48,11 +44,20 @@
             <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">
                 <div class="sb-sidenav-menu">
                     <div class="nav">
-                        <a class="nav-link" href="/home">Dashboard</a>
-                        <a class="nav-link" href="/hr">HR Management</a>
-                        <a class="nav-link" href="/interviewer">Interviewer Management</a>
-                        <a class="nav-link" href="/technologies" >Technology Management</a>
-
+                        <% if(role == 'superadmin'){ %>
+                            <a class="nav-link" href="/home">Dashboard</a>
+                            <a class="nav-link" href="/hr">HR Management</a>
+                            <a class="nav-link" href="/interviewer">Interviewer Management</a>
+                            <a class="nav-link" href="/technologies" >Technology Management</a>
+                            <a class="nav-link" href="/judgementForm">Judgement Form Creation</a>
+                        <%} else if(role == 'hr'){ %>
+                            <a class="nav-link" href="/home">Dashboard</a>
+                            <a class="nav-link" href="/getCandiates">Candidate Management</a>
+                        <% } else if(role == 'interviewer') {%>
+                            <a class="nav-link" href="/home">Dashboard</a>
+                            <a class="nav-link" href="/getShedules">Scheduled Interviews</a>
+                        <% } %>
+                        
                     </div>
                 </div>
             </nav>

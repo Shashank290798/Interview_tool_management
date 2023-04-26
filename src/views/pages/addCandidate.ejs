@@ -1,0 +1,227 @@
+<%- include("../partials/header") %>
+<script
+  src="https://code.jquery.com/jquery-3.6.3.js"
+  integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM="
+  crossorigin="anonymous"
+></script>
+<script
+  src="https://code.jquery.com/jquery-3.6.3.min.js"
+  integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
+  crossorigin="anonymous"
+></script>
+<div class="container-fluid px-4">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/home">Dashboard</a></li>
+      <li class="breadcrumb-item"><a href="../getCandiates">Candidate</a></li>
+      <li class="breadcrumb-item active" aria-current="page">
+        Submit Candidate
+      </li>
+    </ol>
+  </nav>
+  <div class="card page-card">
+    <div class="card-header with-grd">
+      <div class="headingWithBtn">
+        <div>
+          <h4 class="title">Submit Candidate details</h4>
+        </div>
+      </div>
+      <div class="card-body">
+        <form
+          action="/addCandidate"
+          method="post"
+          enctype="multipart/form-data"
+        >
+          <div class="mb-3">
+            <label>Candiate First Name</label>
+            <input
+              class="form-control"
+              type="text"
+              name="candidate_first_name"
+              placeholder="First Name"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label>Candiate Last Name</label>
+            <input
+              required
+              class="form-control"
+              type="text"
+              name="candidate_last_name"
+              placeholder="Last Name"
+            />
+          </div>
+          <div class="mb-3">
+            <label>Candiate Email</label>
+            <input
+              class="form-control"
+              type="text"
+              name="candiate_email"
+              placeholder="Email"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label>Candiate Experience</label>
+            <input
+              class="form-control"
+              type="text"
+              name="candidate_experience"
+              placeholder="Number of years Experience"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label>Select Judgement Form</label>
+            <select name="judgement_form_id" class="form-control" required>
+              <option disabled selected value>select an option</option>
+              <% for(let i=0; i< category.length; i++ ){ %>
+              <option value="<%= category[i]._id %>">
+                <%=
+                `${category[i].technology_details[0].technology_name}(${category[i].experience_details[0].experience_level.join('-')})`
+                %>
+              </option>
+              <% } %>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label>Candidate Technology</label>
+            <select
+              name="candidate_technology"
+              class="form-control"
+              id="technology"
+              multiple
+              required
+            >
+              <% for(let i =0; i< technology.length; i++){ %>
+              <option value="<%= technology[i].technology_name %>">
+                <%= technology[i].technology_name %>
+              </option>
+              <% } %>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label>Interview Start Date And Time:</label>
+            <input
+              class="form-control"
+              type="datetime-local"
+              id="StartDatePicker"
+              name="interview_start_dateAndTime"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label>Interview End Date And Time:</label>
+            <input
+              class="form-control"
+              type="datetime-local"
+              id="EndDatePicker"
+              name="interview_end_dateAndTime"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label>Interviewer</label>
+            <select
+              name="interviewer"
+              class="form-control"
+              id="interviewer"
+              multiple
+              required
+            ></select>
+          </div>
+          <div class="mb-3">
+            <label>Meet Link</label>
+            <input
+              class="form-control"
+              type="text"
+              name="interview_link"
+              placeholder="Paste link without https like(meet.google.com/uwo-hcjz-vug)"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label>Add Notes (250 characters)</label>
+            <textarea class="form-control" name="candidate_notes" maxlength="250" rows="4" placeholder="Add notes" required=""></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="myfile">Select a file:</label>
+            <input
+              type="file"
+              id="myfile"
+              class="form-control"
+              name="file"
+              required
+            />
+          </div>
+          <input
+            type="submit"
+            class="btn btn-primary"
+            value="Submit"
+            id="submit"
+          />
+          <a href="/getCandiates" class="btn btn-secondary">Cancel</a>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  var today = new Date().toISOString().slice(0, 16);
+  document.getElementsByName("interview_start_dateAndTime")[0].min = today;
+  document.getElementsByName("interview_end_dateAndTime")[0].min = today;
+
+  function fetchInterviewrs() {
+    const technology = $("#technology").val();
+    const start = $("#StartDatePicker").val();
+    const end = $("#EndDatePicker").val();
+    // console.log(technology);
+    // console.log(start);
+    // console.log(end);
+    $.ajax({
+      url: "/checkSchedule",
+      method: "POST",
+      data: {
+        technology: technology,
+        start: start,
+        end: end,
+      },
+    })
+      .done(function (interViewers) {
+        console.log("AJAX resp", interViewers);
+        $("#interviewer").empty();
+        if (interViewers.data.length > 0) {
+          interViewers.data.forEach(function (interviewer) {
+            $("#interviewer").append(
+              $("<Option>", {
+                value: interviewer.user_email,
+                text: `${interviewer.user_first_name} ${interviewer.user_last_name} (${interviewer.user_technology})`,
+              })
+            );
+          });
+        } else {
+          $("#interviewer").append(
+            $("<Option>", {
+              //value:interviewer.user_email,
+              text: "No Interviewrs found for this technology and time", //`${interviewer.user_first_name} ${interviewer.user_last_name} (${interviewer.user_technology})`
+            })
+          );
+        }
+      })
+      .fail(function (jqXHR, textStatus, errorThrown) {
+        // Handle AJAX error
+        console.error("AJAX error:", textStatus, errorThrown);
+      });
+  }
+
+  $("#technology ,#StartDatePicker, #EndDatePicker").on("change", function () {
+    if (
+      $("#technology").val() &&
+      $("#StartDatePicker").val() &&
+      $("#EndDatePicker").val()
+    ) {
+      fetchInterviewrs();
+    }
+  });
+</script>

@@ -4496,7 +4496,7 @@ textarea.form-control-lg {
   color: #fff;
 }
 .navbar-dark .navbar-nav .nav-link {
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(255, 255, 255);
 }
 .navbar-dark .navbar-nav .nav-link:hover, .navbar-dark .navbar-nav .nav-link:focus {
   color: rgba(255, 255, 255, 0.75);
@@ -11382,7 +11382,7 @@ body {
 }
 .sb-nav-fixed .sb-topnav {
     z-index: 1039;
-    background: #36483d !important;
+    background: #c968e3 !important;
 }
 .sb-nav-fixed #layoutSidenav #layoutSidenav_nav {
   width: 225px;
@@ -11394,7 +11394,7 @@ body {
 }
 .sb-nav-fixed #layoutSidenav #layoutSidenav_nav .sb-sidenav .sb-sidenav-menu {
     overflow-y: auto;
-    background: #697B70;
+    background: linear-gradient(to bottom, #d372fa, #5fc3e4);
 }
 .sb-nav-fixed #layoutSidenav #layoutSidenav_content {
   padding-left: 225px;
@@ -11433,7 +11433,7 @@ body {
   margin: 0;
 }
 .sb-topnav.navbar-dark #sidebarToggle {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255);
 }
 .sb-topnav.navbar-light #sidebarToggle {
   color: #212529;
@@ -11493,7 +11493,7 @@ body {
   color: rgba(255, 255, 255, 0.25);
 }
 .sb-sidenav-dark .sb-sidenav-menu .nav-link {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255);
 }
 .sb-sidenav-dark .sb-sidenav-menu .nav-link .sb-nav-link-icon {
   color: rgba(255, 255, 255, 0.25);
@@ -11749,20 +11749,20 @@ main {
     background: #f5f5f5;
 }
 .btn.btn-primary {
-    background: #2f523d;
-    border-color: #2f523d;
+    background: #5fc3e4;
+    border-color: #5fc3e4;
 }
 .dashColoredCards > [class*="col-"] > .card{
-  background: #36483d !important;
+    background: #5fc3e4 !important;
 }
 .dashColoredCards > [class*="col-"]:nth-child(2) > .card{
-  background: #83BB4F !important;
+    background: #d372fa !important;
 }
 .dashColoredCards > [class*="col-"]:nth-child(4) > .card{
   background: #667E4D !important;
 }
 .dashColoredCards > [class*="col-"]:nth-child(3) > .card{
-  background: #42493A !important;
+    background: #5fc3e4 !important;
 }
 #read-more-kra{
   cursor:pointer;
@@ -11819,3 +11819,45 @@ text-decoration: none;
 .emp-name:hover{
     color: green;
 }
+.int-action{
+  color: #fff;
+  background-color: #6c757d;
+  border-color: #6c757d;
+  width: 71px;
+  font-size: 12px;
+  padding: 10px 0px 10px 0px;
+}
+
+#email-error{
+  color: rgb(238, 41, 57);
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.download-xl{
+  color: #0c4128;
+  text-decoration: none;
+  margin-left: 7px;
+}
+
+.icon-cancel{
+  color: brown;
+  background-color: transparent;
+  border: none;
+  font-size: 18px !important;
+}
+
+.icon-join{
+  color: #1f6ee3;
+  background-color: transparent;
+  border: none;
+  font-size: 18px !important;
+
+}
+.icon-file{
+  color: green;
+  background-color: transparent;
+  border: none;
+  font-size: 18px !important;
+}
+

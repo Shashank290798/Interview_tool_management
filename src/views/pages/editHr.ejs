@@ -1,0 +1,89 @@
+<%- include("../partials/header") %>
+
+<div class="container-fluid px-4">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/home">Dashboard</a></li>
+      <li class="breadcrumb-item"><a href="../hr">Hr</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Submit KRA</li>
+    </ol>
+  </nav>
+  <div class="card page-card">
+    <div class="card-header with-grd">
+      <div class="headingWithBtn">
+        <div>
+          <h4 class="title">Submit Hr details</h4>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <form action="/hrUpdate/<%= hr._id %>" method="POST">
+        <label>Hr Email</label>
+        <input
+          class="form-control"
+          type="text"
+          name="user_email"
+          placeholder="Email"
+          required=""
+          value="<%= hr.user_email %>"
+          readonly
+        />
+        <br>
+        <label>Hr First Name</label>
+        <input
+          class="form-control"
+          type="text"
+          name="user_first_name"
+          placeholder="First Name"
+          required=""
+          value="<%= hr.user_first_name %>"
+        />
+        <br>
+        <label>Hr Last Name</label>
+        <input
+          class="form-control"
+          type="text"
+          name="user_last_name"
+          placeholder="Last Name"
+          required=""
+          value="<%= hr.user_last_name %>"
+        />
+        <br>
+        <input type="submit" class="btn btn-primary" value="Save" />
+        <a href="/hr" class="btn btn-secondary">Cancel</a>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+document.querySelector('form').addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  const id = "<%= hr._id %>";
+  const payload = {
+    user_email: "<%= hr.user_email %>",
+    user_first_name: "<%= hr.user_first_name %>",
+    user_last_name: "<%= hr.user_last_name %>",
+  };
+
+  try {
+    const response = await fetch(`/hrUpdate/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (response.ok) {
+      window.location.href = '/hr';
+    } else {
+      throw new Error('Failed to update HR data');
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Failed to update HR data');
+  }
+});
+
+</script>

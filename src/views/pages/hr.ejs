@@ -37,7 +37,40 @@
             </th>
           </tr>
         </thead>
-
+        <tbody>
+          <% hrList.forEach((hr, index) => { %>
+          <tr>
+            <td>
+              <div><%= index + 1 %></div>
+            </td>
+            <td>
+              <div class="firstName"><%= hr.user_first_name %></div>
+            </td>
+            <td>
+              <div class="lastName"><%= hr.user_last_name %></div>
+            </td>
+            <td>
+              <div class="email"><%= hr.user_email %></div>
+            </td>
+            <td>
+              <div class="d-flex justify-content-end">
+                <a href="/editHr/<%= hr._id %>" class="btn btn-secondary me-3"
+                  >Edit</a
+                >
+                <br />
+                <button
+                  class="btn btn-danger deleteHr"
+                  data-bs-toggle="modal"
+                  data-bs-target="#deleteDialog"
+                  data-hr-id="<%= hr._id %>"
+                >
+                  Delete
+                </button>
+              </div>
+            </td>
+          </tr>
+          <% }); %>
+        </tbody>
       </table>
     </div>
   </div>

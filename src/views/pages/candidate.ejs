@@ -1,0 +1,453 @@
+<%- include("../partials/header") %>
+
+<div class="container-fluid px-4">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/home">Dashboard</a></li>
+      <li class="breadcrumb-item active" aria-current="page">
+        Candidate Management
+      </li>
+    </ol>
+  </nav>
+  <div class="card page-card">
+    <div class="card-header with-grd">
+      <div class="headingWithBtn">
+        <!-- <div class="row"> -->
+        <div class="col-xl-4"><h4 class="title">Candidate Management</h4></div>
+        <div class="col-xl-4 align-me-right">
+          <a href="/addCandiateForm" class="btn btn-primary"
+            >Schedule InterView</a
+          >
+          <br />
+          <br />
+          <div class="col-xp-12 align-me-right">
+            <form
+              id="scheduleFilterForm"
+              class="form-inline float-end"
+              action="/getCandiates"
+              method="GET"
+            >
+              <div class="form-group">
+                <label for="fromDate" class="me-2">From Date:</label>
+                <input
+                  type="date"
+                  id="fromDate"
+                  name="fromDate"
+                  class="form-control"
+                />
+              </div>
+              <div class="form-group mx-3">
+                <label for="toDate" class="me-2">To Date:</label>
+                <input
+                  type="date"
+                  id="toDate"
+                  name="toDate"
+                  class="form-control"
+                />
+              </div>
+              <button id="filterBtn" type="submit" class="btn btn-primary">
+                Filter
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <table id="datatablesSimple" class="table">
+        <thead>
+          <tr>
+            <th>
+              <div>S.no.</div>
+            </th>
+            <th>
+              <div>Candidate Name</div>
+            </th>
+            <th><div>Date & Time</div></th>
+            <th>
+              <div>Technology</div>
+            </th>
+            <th>
+              <div>Exp</div>
+            </th>
+            <th>
+              <div>Interviewer</div>
+            </th>
+            <th>
+              <div>Status</div>
+            </th>
+            <th>
+              <div>Notes</div>
+            </th>
+            <th>
+              <div style="text-align: center">Action</div>
+            </th>
+          </tr>
+        </thead>
+        <% if( candidate_details.length > 0){ %> <% for(let i=0; i<
+        candidate_details.length; i++) {%>
+        <tr>
+          <td>
+            <div><%= i+1 %></div>
+          </td>
+          <td>
+            <div>
+              <%=
+              `${candidate_details[i].candidate_details[0].candidate_first_name}
+              ${candidate_details[i].candidate_details[0].candidate_last_name} `
+              %>
+            </div>
+          </td>
+          <td>
+            <%= new
+            Date(candidate_details[i].interview_start_date_time).toLocaleString()
+            %>
+          </td>
+          <td>
+            <div><%= candidate_details[i].interview_technology %></div>
+          </td>
+          <td>
+            <div>
+              <%= candidate_details[i].candidate_details[0].candidate_experience
+              %>
+            </div>
+          </td>
+          <td>
+            <div><%= `${interviewer_name[i]}` %></div>
+          </td>
+          <td>
+            <% if(candidate_details[i].interview_status === 'CANCELED') {%>
+            <div
+              style="display: table-cell"
+              class="btn popupData"
+              data-bs-toggle="modal"
+              data-bs-target="#canceledBy"
+              onclick="getDetails('<%= candidate_details[i]._id %>')"
+            >
+              <%= candidate_details[i].interview_status%>
+            </div>
+            <% } else {%>
+            <div style="display: table-cell; padding-left: 15px">
+              <%= candidate_details[i].interview_status %>
+            </div>
+            <% } %>
+          </td>
+          <!-- <td>
+            <div>
+              <%= candidate_details[i].interview_notes %>
+            </div>
+          </td> -->
+          <td>
+            <div>
+              <% if(candidate_details[i].interview_notes.length < 10){ %> <%=
+              candidate_details[i].interview_notes %> <% } else { %> <% var
+              string = candidate_details[i].interview_notes %> <% var
+              trimmedString = string.substring(0, 10) %>
+              <p>
+                <%= trimmedString %>...&nbsp;&nbsp;
+                <a
+                  onclick="openPopup('<%= candidate_details[i].interview_notes %>')"
+                  id="read-more-kra"
+                  class="link-primary readKra"
+                  data-bs-toggle="modal"
+                  data-bs-target="#readDialog"
+                  data-id=""
+                >
+                  Read more
+                </a>
+              </p>
+              <% } %>
+            </div>
+          </td>
+
+          <td>
+            <div class="d-flex justify-content-end">
+              <% if(candidate_details[i].interview_status !== 'CANCELED'){ %>
+              <a
+                href="https://<%= candidate_details[i].interview_meetLink%>"
+                target="_blank"
+                class="btn me-2"
+                title="Join Interview"
+                ><span class="icon-join"><i class="fa-solid fa-video"></i></span
+              ></a>
+              <a
+                href="#"
+                title="Cancel Interview"
+                class="btn me-2 cancelCandidate"
+                data-bs-target="#cancelDialog"
+                data-bs-toggle="modal"
+                data-candidate-id="<%= candidate_details[i].interview_candidate_id %>"
+              >
+                <span class="icon-cancel"
+                  ><i class="fa-solid fa-circle-xmark"></i
+                ></span>
+              </a>
+              <% } %>
+              <a
+                title="Download Resume"
+                href="/resumeDownload?file_name=<%= candidate_details[i].candidate_details[0].candidate_resume%>"
+                class="btn me-2"
+                ><span class="icon-file"
+                  ><i class="fa-solid fa-file-arrow-down"></i
+                ></span>
+              </a>
+              <!-- <a href="/getForm?formId=<%= candidate_details[i].candidate_details[0].judgement_form_id %>" class="btn me-2 btn-primary">
+                SUBMIT</a> -->
+              <button
+                class="btn btn-danger deleteKRA"
+                data-bs-toggle="modal"
+                data-bs-target="#deleteDialog"
+                data-id=""
+              >
+                Delete
+              </button>
+            </div>
+          </td>
+        </tr>
+        <% } %> <% } else {%>
+        <tr>
+          <td colspan="7">
+            <div style="text-align: center">No Data Found</div>
+          </td>
+        </tr>
+        <% }%>
+      </table>
+    </div>
+  </div>
+</div>
+<div
+  class="modal fade"
+  id="readDialog"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Notes</h5>
+        <button
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+          type="button"
+          onclick="reloadPage()"
+        ></button>
+      </div>
+      <div class="modal-body notes-container">
+        <!-- Notes will be inserted here -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- kra description popup ends here -->
+
+<script>
+  function openPopup(notes) {
+    // Get the modal element
+    const modal = document.getElementById("readDialog");
+
+    // Get the element where the notes will be displayed
+    const notesContainer = modal.querySelector(".notes-container");
+
+    // Set the notes in the container
+    notesContainer.textContent = notes;
+
+    // Show the modal
+    const bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
+  }
+  window.onbeforeunload = function () {
+    location.reload();
+  };
+</script>
+
+<script>
+  function reloadPage() {
+    location.reload();
+  }
+</script>
+
+<div
+  class="modal fade"
+  id="cancelDialog"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title fs-5">Cancel Schedule</h2>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <label>Please Give the reason for the cancellation</label>
+        <input
+          class="form-control mt-2"
+          type="text"
+          id="cancel_message"
+          required=""
+        />
+        <p id="error_msg_req" style="color: red"></p>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+          onclick="clearid()"
+        >
+          Close
+        </button>
+        <button type="button" class="btn btn-primary" id="cancelCandidateBtn">
+          confirm
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="canceledBy"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title fs-5">cancellation details</h2>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <h6>Canceled By</h6>
+        <p id="canceled_by"></p>
+        <h6>Reason for cancellation</h6>
+        <p id="cancele_message"></p>
+        <p id="error_msg" style="color: red"></p>
+      </div>
+      <!-- <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+        <button type="button" class="btn btn-primary" id="cancelCandidateBtn">
+          confirm
+        </button>
+      </div> -->
+    </div>
+  </div>
+</div>
+
+<script>
+  function clearid() {
+    let err_msg = document.getElementById("error_msg_req");
+    console.log("inside close:", err_msg);
+    err_msg.innerHTML = "";
+  }
+  var deleteDialogID;
+  function remove() {
+    var url = `/removeKra/${deleteDialogID}`;
+    $.ajax({
+      type: "DELETE",
+      dataType: "json",
+      url: url,
+      timeout: 5000,
+      complete: function (data) {
+        location.reload();
+      },
+    });
+  }
+
+  function getDetails(id) {
+    $.ajax({
+      type: "GET",
+      url: `/cancelationDetails/${id}`,
+      success: function (data) {
+        $("#canceled_by").html(data.data.name);
+        $("#cancele_message").html(data.data.cancel_message);
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        let message = JSON.parse(jqXHR.responseText);
+        $("#error_msg").html(message.message);
+      },
+    });
+  }
+</script>
+<script>
+  $(document).on("click", ".cancelCandidate", function () {
+    const candidateId = $(this).data("candidate-id");
+    $("#cancelCandidateBtn").data("candidate-id", candidateId);
+  });
+
+  $("#cancelCandidateBtn").on("click", function () {
+    const candidateToCancel = $(this).data("candidate-id");
+    console.log("candidate_Id gfgfg->", candidateToCancel);
+    if (!candidateToCancel) {
+      return;
+    }
+    let message = $("#cancel_message").val();
+    // $(this).prop("disabled", true);
+
+    var errorTag = document.getElementById("error_msg_req");
+
+    if (message.length == 0) {
+      errorTag.innerHTML = "Input field is required";
+    } else {
+      $.ajax({
+        type: "PATCH",
+        url: `/cancleSchedule/${candidateToCancel}`,
+        data: {
+          cancle_message: message,
+        },
+        success: function (data) {
+          window.location.href = "/getCandiates";
+          console.log("After Success", data);
+        },
+        error: function (err) {
+          console.error("Error after ->", err);
+        },
+      });
+    }
+  });
+</script>
+
+<script>
+  $(document).ready(function () {
+    // Event listener for filter button
+    $("#filterBtn").on("click", function () {
+      // Get filter values from form
+      var fromDate = new Date($("#fromDate").val()).toISOString();
+      var toDate = new Date($("#toDate").val()).toISOString();
+      console.log(fromDate, toDate);
+      // Make AJAX request to backend with filter values
+      $.ajax({
+        type: "GET",
+        url: "/getCandiates",
+        data: {
+          fromDate: fromDate,
+          toDate: toDate,
+        },
+        success: function (data) {
+          // Update table with filtered schedules
+          $("#datatablesSimple").html(data);
+        },
+        error: function (xhr, status, error) {
+          console.log(error);
+        },
+      });
+    });
+  });
+</script>
