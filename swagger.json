@@ -1,0 +1,387 @@
+{
+    "swagger": "2.0",
+    "info": {
+      "version": "1.0.0",
+      "title": "Interview Project",
+      "description": "This is Swagger for APIs."
+    },
+    "host": "localhost:8000/",
+    "basePath": "/",
+    "schemes": [
+      "http",
+      "https"
+    ],
+    "securityDefinitions": {
+      "apiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "authorization",
+        "description": "Paste the Token"
+      }
+    },
+    "consumes": [
+      "application/json"
+    ],
+    "produces": [
+      "application/json"
+    ],
+    "paths": {
+        "/createVendor" : {
+            "post": {
+                "tags": [
+                  "Auth"
+                ],
+                "description": "This API is used to register the vendor, A mail will be sent with the Email and Password to the Vendor Email",
+                "parameters": [
+                  {
+                    "name": "obj",
+                    "in": "body",
+                    "required": false,
+                    "schema": {
+                      "$ref": "#/definitions/vendorRegister"
+                    }
+                  }
+                ],
+                "responses": {
+                  "201": {
+                    "description": "Vendor Registerd Sucessfully and Mail hs been sent"
+                  },
+                  "400": {
+                    "description": "Bad Request"
+                  },
+                  "501": {
+                    "description": "Not Implemented"
+                  }
+                }
+            }
+        },
+        "/vendorOnbording" : {
+          "post": {
+            "security": [
+              {
+                "apiKeyAuth": []
+              }
+            ],
+              "tags": [
+                "Vendors"
+              ],
+              "description": "This API is Used to create the Onbording from of the Vendor and the technical_skills will be given in a coma separated values",
+              "parameters": [
+                
+                {
+                  "name": "obj",
+                  "in": "body",
+                  "required": false,
+                  "schema": {
+                    "$ref": "#/definitions/vendorOnbording"
+                  }
+                }
+              ],
+              "responses": {
+                "201": {
+                  "description": "Congratulations, your onboarding form has been submitted successfully"
+                },
+                "400": {
+                  "description": "Bad Request"
+                },
+                "404":{
+                  "description": "Not Found"
+                },
+                "501": {
+                  "description": "Not Implemented"
+                }
+              }
+          }
+        },
+        "/getSkills":{
+        "get":{
+          "tags":[
+            "Common Routes"
+          ],
+          "description": "This API is used to get all Technical Skills",
+          "responses": {
+            "200": {
+              "description": "Success"
+            },
+            "404":{
+              "description": "No Data Found"
+            },
+            "501": {
+              "description": "Not Implemented"
+            }
+          }
+        }
+        },
+        "/signin" : {
+            "post": {
+                "tags": [
+                  "Auth"
+                ],
+                "description": "To login the user into the system",
+                "parameters": [
+                  {
+                    "name": "obj",
+                    "in": "body",
+                    "required": false,
+                    "schema": {
+                      "$ref": "#/definitions/userLogin"
+                    }
+                  }
+                ],
+                "responses": {
+                  "200": {
+                    "description": "User loggedin successfully"
+                  },
+                  "401": {
+                    "description": "Bad Request"
+                  },
+                  "404": {
+                    "description": "User not Registered"
+                  }
+                }
+            }
+        },
+        "/getallVendor" : {
+          "get": {
+            
+              "tags": [
+                "Admin"
+              ],
+              "description": "To get all Vendors",
+              "parameters": [
+                {
+                 "schema": {
+                    "$ref": "#/definitions/getVendor"
+                  }
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "Vendors details fetched successfully"
+                },
+                "401": {
+                  "description": "Unauthorized"
+                },
+                "500": {
+                  "description": "Server Error"
+                }
+              },
+              "security": [
+                {
+                  "apiKeyAuth": []
+                }
+              ]
+          }
+        },
+        "/getVendor/{vendor_id}" : {
+        "get": {
+          
+            "tags": [
+              "Vendors"
+            ],
+            "description": "To get particular Vendor by Id",
+            "parameters": [
+              {
+               "schema": {
+                  "$ref": "#/definitions/getVendor"
+                }
+              },
+              {
+                "name": "vendor_id",
+                "in": "path",
+                "required": true,
+                "type": "string"
+              }
+              
+              
+            ],
+            "responses": {
+              "200": {
+                "description": "Vendors details fetched successfully"
+              },
+              "404": {
+                "description": "Vendor not found"
+              },
+              "500": {
+                "description": "Server Error"
+              }
+            },
+            "security": [
+              {
+                "apiKeyAuth": []
+              }
+            ]
+        }
+        },
+        "/vendorStatus/{_id}" : {
+      "post": {
+        
+          "tags": [
+            "Admin"
+          ],
+          "description": "To get particular Vendor by id and update application status",
+          "parameters": [
+            {
+             "schema": {
+                "$ref": "#/definitions/getVendor"
+              }
+            },
+            {
+              "name": "_id",
+              "in": "path",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "user_application_status",
+              "in": "body",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "message",
+              "in": "body",
+              "required": true,
+              "type": "string"
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Vendor form approved"
+            },
+            "202": {
+              "description": "Vendor form received it's currently under processing "
+            },
+            "406": {
+              "description": "Vendor form Rejected "
+            },
+            "404": {
+              "description": "Vendor not found"
+            },
+            "500": {
+              "description": "Server Error"
+            }
+          },
+          "security": [
+            {
+              "apiKeyAuth": []
+            }
+          ]
+      }
+        }
+    },
+    "definitions": {
+        "vendorRegister" : {
+          "type": "object",
+          "properties": {
+              "user_fname":{
+                "type":"string",
+                "example":"your First Name"
+              },
+              "user_lname":{
+                "type":"string",
+                "example":"Your Last name"
+              },
+              "user_email":{
+                "type":"string",
+                "example":"examp@gmail.com"
+              }
+          }
+      },
+        "vendorOnbording" : {
+        "type": "object",
+        "properties": {
+            "vendor_company":{
+                "type":"string",
+                "example":"x Comapany LTD"
+            },
+            "vendor_address":{
+              "type":"object",
+              "properties":{
+                "street_address":{
+                    "type":"string",
+                    "example":"4th crosss road"
+                },
+                "city":{
+                    "type":"string",
+                    "example":"Bangalore"
+                },
+                "state":{
+                    "type":"string",
+                    "example":"Karnataka"
+                },
+                "country":{
+                    "type":"string",
+                    "example":"India"
+                },
+                "zip":{
+                    "type":"number",
+                    "example":504001
+                }
+            }
+          },
+            "vendor_gst_nbr":{
+                "type":"string",
+                "example":"ABCIDPR1882G91"
+            },
+            "vendor_msme_registerd":{
+                "type":"boolean",
+                "example":"true"
+            },
+            "vendor_bench_strength":{
+                "type":"string",
+                "example":"20-30"
+            },
+            "vendor_technical_skills":{
+                "type":"array",
+                "example":"NodeJs"
+            },
+            "vendor_type":{
+                "type":"number",
+                "example":3
+            },
+            "vendor_name1":{
+              "type":"string",
+              "example":"Name1"
+            },
+            "vendor_email1":{
+                "type":"string",
+                "example":"email1@gmail.com"
+            },
+            "vendor_contact1":{
+                "type":"string",
+                "example":"987654320"
+            },
+            "vendor_name2":{
+              "type":"string",
+              "example":"Name2"
+            },
+            "vendor_email2":{
+                "type":"string",
+                "example":"email2@gmail.com"
+            },
+            "vendor_contact2":{
+                "type":"string",
+                "example":"987654321"
+            }
+        }
+      },
+        "userLogin" : {
+        "type": "object",
+        "properties": {
+            "user_email": {
+            "type": "string",
+            "example": "kedar.g@webvillee.in"
+            },
+            "user_password": {
+            "type": "string",
+            "example": "IliM9K"
+            }
+        }
+      },
+        "getVendor" : {
+        "type": "object"
+        
+      }
+    }
+}

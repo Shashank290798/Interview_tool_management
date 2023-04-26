@@ -1,0 +1,100 @@
+<%- include("../partials/header"); %>
+
+<div class="container-fluid px-4">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/home">Dashboard</a></li>
+      <li class="breadcrumb-item active" aria-current="page">HR Management</li>
+    </ol>
+  </nav>
+  <div class="card page-card">
+    <div class="card-header with-grd">
+      <div class="headingWithBtn">
+        <div class="col-xl-4"><h4 class="title">HR Management</h4></div>
+        <div class="col-xl-4 align-me-right">
+          <a href="/addHr" class="btn btn-primary"> Add HR </a>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <table id="datatablesSimple" class="table">
+        <thead>
+          <tr>
+            <th>
+              <div>S.no.</div>
+            </th>
+            <th>
+              <div>First Name</div>
+            </th>
+            <th>
+              <div>Last Name</div>
+            </th>
+            <th>
+              <div>Email</div>
+            </th>
+            <th>
+              <div>Actions</div>
+            </th>
+          </tr>
+        </thead>
+
+      </table>
+    </div>
+  </div>
+</div>
+<div
+  class="modal fade"
+  id="deleteDialog"
+  tabindex="-1"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title fs-5">Delete HR</h2>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete this HR?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+        <button type="button" class="btn btn-primary" id="deleteHrBtn">
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  $(document).on("click", ".deleteHr", function () {
+    const hrId = $(this).data("hr-id");
+    $("#deleteHrBtn").data("hr-id", hrId);
+  });
+  $("#deleteHrBtn").on("click", function () {
+    const hrToDeleteId = $(this).data("hr-id");
+
+    if (!hrToDeleteId) {
+      return;
+    }
+    $(this).prop("disabled", true);
+    $.ajax({
+      type: "DELETE",
+      url: `/hrDelete/${hrToDeleteId}`,
+      success: function (data) {
+        window.location.href = "/hr"; // redirect to HR management page
+      },
+      error: function (err) {
+        console.log(err);
+      },
+    });
+  });
+</script>

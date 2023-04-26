@@ -1,0 +1,121 @@
+const express = require("express");
+const bodyParser = require("body-parser");
+const app = express();
+const passport = require("passport");
+const session = require("express-session");
+const dotenv = require("dotenv");
+// dotenv.config();
+require("./src/middleware/passportsetup");
+const cors = require("cors");
+const moment = require("moment");
+const mongodb = require("./src/database/database");
+const path = require("path");
+const msg = require("./src/utils/constants");
+const hrRouter = require("./src/router/hrRouter/hrRouter");
+const userRouter = require("./src/router/userRouter/userRouter");
+// const technologyRouter = require("./src/router/technologyRouter/technologyRouter");
+// const userModel = require("./src/models/userModel");
+// const interviewerRouter = require("./src/router/interviewerRouter/interviewerRouter");
+const configs = require("./src/config/config");
+// const cookieParser = require("cookie-parser");
+// const jwt = require("jsonwebtoken");
+// const authUser = require("./src/middleware/isAuthMiddleware");
+// const loginPage = require("./src/controller/loginPage");
+// const auth = require("./src/middleware/isAuthMiddleware");
+// const logger = require("./src/utils/logger");
+
+// set up session
+app.use(
+  session({
+    secret: "secret",
+    resave: false,
+    saveUninitialized: true,
+  })
+);
+
+// initialize passport and passport session
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use((req, res, next) => {
+  res.locals.userRole = req.session.userRole || "";
+  next();
+});
+
+// mongoDB connection
+mongodb.createDbConnection();
+
+// Setting for the root path for views directory
+app.set("views", "./src/views");
+
+// Setting the view engine
+app.set("view engine", "ejs");
+
+// Setting for the root path for public directory
+app.use("/static", express.static(path.join(__dirname, "./src/static")));
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+// app.use(cookieParser());
+app.use(cors());
+
+app.use(
+  cors({
+    origin: "*",
+  })
+);
+
+// routes
+app.use("/", hrRouter);
+// app.use("/", interviewerRouter);
+app.use("/", userRouter);
+// app.use("/", technologyRouter);
+
+// login route
+// app.use('/', loginPage);
+app.get("/", (req, res) => {
+  res.render("pages/login");
+});
+
+// route for Google authentication
+app.get(
+  "/google",
+  passport.authenticate("google", {
+    scope: ["email", "profile"],
+  })
+);
+
+app.get(
+  "/google/callback",
+  passport.authenticate("google", {
+    successRedirect: "/google/success",
+    failureRedirect: "/google",
+  })
+);
+
+// app.get("/logout", (req, res) => {
+//   req.logout((err) => {
+//     // console.log("logOut called");
+//     if (err) {
+//       console.log(err);
+//     }
+//     res.clearCookie("connect.sid");
+//     res.clearCookie("jwt");
+//     res.redirect("/");
+//   });
+// });
+
+// app.get("*", auth, (req, res) => {
+//   try {
+//     let role = req.role;
+//     res.render("pages/404", { role: role });
+//   } catch (error) {
+//     res.render("pages/500", { role: role });
+//   }
+// });
+
+let port = process.env.PORT || configs.PORT;
+
+app.listen(port, () => {
+  console.log(msg.success.SERVER_RUNN, port);
+});
